@@ -1,0 +1,34 @@
+# Compiled binary files
+*.exe
+*.o
+*.out
+
+# Output directories
+bin/
+release/
+
+# Go specific files
+*.test
+*.prof
+*.cover
+.idea/
+.vscode/
+.DS_Store
+
+# Dependency directories
+vendor/
+go.sum
+
+# Temporary files
+*.tmp
+
+# Environment-specific files
+.env
+*.env
+
+# Log files
+*.log
+
+# Configuration files
+config.yml
+config.yaml
