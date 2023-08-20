@@ -50,7 +50,8 @@ With the updated command system, you can now use different commands to manage th
 ## Usage
 
 - **Certificate Request:** POST a CSR to `/api/v1/certificate/request` to generate signed certificates.
-- **Certificate Retrieval:** GET a certificate by serial number using `/api/v1/certificate/retrieve?serialNumber=SERIAL_NUMBER`.
+- **Certificate Retrieval:** POST a serial number to get a certificate using `/api/v1/certificate/retrieve`.
+- **Certificate Revocation:** POST a serial number to revoke a certificate using `/api/v1/certificate/revoke`.
 - **CRL Retrieval:** GET the latest CRL using `/public/ca/intermediate/crl`
 
 ### API Request Structure
