@@ -17,6 +17,7 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 - Store serial numbers directly as big int instead of doing type conversion back and forth
 - Endpoint to serve CA PK
 - Implement authentication
+- Check HTTP method? Real router instead of http/mux?
 - more..
 
 ## Getting Started
@@ -41,6 +42,7 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 
 - **Certificate Request:** POST a CSR to `/api/v1/certificate/request` to generate signed certificates.
 - **Certificate Retrieval:** GET a certificate by serial number using `/api/v1/certificate/retrieve?serialNumber=SERIAL_NUMBER`.
+- **CRL Retrieval:** GET the latest CRL using `/public/ca/intermediate/crl`
 
 ## Dependencies
 
