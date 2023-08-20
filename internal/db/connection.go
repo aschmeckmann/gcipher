@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"gcipher/internal/config"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,8 +16,13 @@ var (
 
 func GetDBClient() (*mongo.Client, error) {
 	var err error
+	cfg, err := config.GetConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	clientOnce.Do(func() {
-		clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+		clientOptions := options.Client().ApplyURI(cfg.DatabaseURL)
 		client, err = mongo.Connect(context.Background(), clientOptions)
 		if err != nil {
 			panic(err)

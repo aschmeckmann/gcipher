@@ -22,6 +22,15 @@ type Config struct {
 	CAKey                      interface{}
 }
 
+// Default values
+const (
+	DefaultPort                       = 8080
+	DefaultCertificateLifetimeDefault = 365 // Days
+	DefaultCACertPath                 = "ca.crt"
+	DefaultCAKeyPath                  = "ca.key"
+	DefaultDatabaseURL                = "mongodb://localhost:27017"
+)
+
 var (
 	configOnce sync.Once
 	configKey  = "config"
@@ -32,16 +41,21 @@ func NewConfig() (*Config, error) {
 
 	configFile, err := findConfigFile()
 	if err != nil {
-		return nil, fmt.Errorf("failed to find config file: %v", err)
-	}
+		fmt.Println("No config file found, using defaults...")
+		cfg.Port = DefaultPort
+		cfg.CertificateLifetimeDefault = DefaultCertificateLifetimeDefault
+		cfg.CACertPath = DefaultCACertPath
+		cfg.CAKeyPath = DefaultCAKeyPath
+		cfg.DatabaseURL = DefaultDatabaseURL
+	} else {
+		content, err := os.ReadFile(configFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read config file: %v", err)
+		}
 
-	content, err := os.ReadFile(configFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %v", err)
-	}
-
-	if err := yaml.Unmarshal(content, &cfg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal YAML: %v", err)
+		if err := yaml.Unmarshal(content, &cfg); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal YAML: %v", err)
+		}
 	}
 
 	// Set environment variable overrides
