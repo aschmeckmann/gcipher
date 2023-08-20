@@ -31,8 +31,8 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 
 ## Usage
 
-- **Certificate Request:** POST a CSR to `/certificate/request` to generate signed certificates.
-- **Certificate Retrieval:** GET a certificate by serial number using `/certificate/retrieve?serialNumber=SERIAL_NUMBER`.
+- **Certificate Request:** POST a CSR to `/api/v1/certificate/request` to generate signed certificates.
+- **Certificate Retrieval:** GET a certificate by serial number using `/api/v1/certificate/retrieve?serialNumber=SERIAL_NUMBER`.
 
 ## Dependencies
 
