@@ -34,6 +34,7 @@ const (
 var (
 	configOnce sync.Once
 	configKey  = "config"
+	cfg        *Config
 )
 
 func NewConfig() (*Config, error) {
@@ -42,6 +43,7 @@ func NewConfig() (*Config, error) {
 	configFile, err := findConfigFile()
 	if err != nil {
 		fmt.Println("No config file found, using defaults...")
+
 		cfg.Port = DefaultPort
 		cfg.CertificateLifetimeDefault = DefaultCertificateLifetimeDefault
 		cfg.CACertPath = DefaultCACertPath
@@ -99,7 +101,6 @@ func NewConfig() (*Config, error) {
 }
 
 func GetConfig() (*Config, error) {
-	var cfg *Config
 	var err error
 	configOnce.Do(func() {
 		cfg, err = NewConfig()
