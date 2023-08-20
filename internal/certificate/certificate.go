@@ -79,7 +79,7 @@ func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Create certificate template
 	template := x509.Certificate{
-		SerialNumber:          serialNumber, // TODO: Should be unique
+		SerialNumber:          serialNumber,
 		Subject:               csr.Subject,
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(0, 0, request.Data.Lifetime),
