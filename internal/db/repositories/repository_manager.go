@@ -8,6 +8,7 @@ var (
 	repoOnce      sync.Once
 	certRepo      *CertificateRepository
 	userRepo      *UserRepository
+	crlRepo       *CRLRepository
 	repoInitError error
 )
 
@@ -20,6 +21,11 @@ func InitializeRepositories() error {
 		}
 
 		userRepo, repoInitError = NewUserRepository()
+		if repoInitError != nil {
+			return
+		}
+
+		crlRepo, repoInitError = NewCRLRepository()
 		if repoInitError != nil {
 			return
 		}
@@ -36,4 +42,9 @@ func GetCertificateRepository() *CertificateRepository {
 // GetUserRepository returns the singleton-like instance of the UserRepository
 func GetUserRepository() *UserRepository {
 	return userRepo
+}
+
+// G returns the singleton-like instance of the UserRepository
+func GetCRLRepository() *CRLRepository {
+	return crlRepo
 }
