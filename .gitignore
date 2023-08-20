@@ -29,6 +29,17 @@ go.sum
 # Log files
 *.log
 
+# Sensitive files
+*.key
+*.pem
+*.crt
+*.cer
+*.pfx
+*.p12
+*.password
+*.pass
+*.secret
+
 # Configuration files
 config.yml
 config.yaml
