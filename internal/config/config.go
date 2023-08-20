@@ -1,7 +1,6 @@
 package config
 
 import (
-	"context"
 	"crypto/x509"
 	"fmt"
 	"gcipher/internal/util"
@@ -33,7 +32,6 @@ const (
 
 var (
 	configOnce sync.Once
-	configKey  = "config"
 	cfg        *Config
 )
 
@@ -86,6 +84,8 @@ func NewConfig() (*Config, error) {
 			return nil, fmt.Errorf("failed to parse CA certificate: %v", err)
 		}
 		cfg.CACert = cert
+	} else {
+		return nil, fmt.Errorf("failed to parse CA certificate: %v", err)
 	}
 
 	if caKeyPath := os.Getenv("GCIPHER_CA_KEY_PATH"); caKeyPath != "" {
@@ -95,6 +95,8 @@ func NewConfig() (*Config, error) {
 			return nil, fmt.Errorf("failed to parse CA private key: %v", err)
 		}
 		cfg.CAKey = key
+	} else {
+		return nil, fmt.Errorf("failed to parse CA private key: %v", err)
 	}
 
 	return &cfg, nil
@@ -111,12 +113,6 @@ func GetConfig() (*Config, error) {
 	}
 
 	return cfg, nil
-}
-
-// GetConfigFromContext retrieves the Config object from the context
-func GetConfigFromContext(ctx context.Context) (*Config, bool) {
-	cfg, ok := ctx.Value(configKey).(*Config)
-	return cfg, ok
 }
 
 func findConfigFile() (string, error) {
