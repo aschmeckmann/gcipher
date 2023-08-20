@@ -17,7 +17,7 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 - Store serial numbers directly as big int instead of doing type conversion back and forth
 - Endpoint to serve CA PK
 - Implement authentication
-- Check HTTP method? Real router instead of http/mux?
+- Check HTTP method? Real routing instead of http/mux?
 - more..
 
 ## Getting Started
@@ -43,6 +43,42 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 - **Certificate Request:** POST a CSR to `/api/v1/certificate/request` to generate signed certificates.
 - **Certificate Retrieval:** GET a certificate by serial number using `/api/v1/certificate/retrieve?serialNumber=SERIAL_NUMBER`.
 - **CRL Retrieval:** GET the latest CRL using `/public/ca/intermediate/crl`
+
+### API Request Structure
+
+```json
+{
+  "data": {
+    "applicant": "John Doe",         // Optional: Name of the certificate applicant
+    "csr": "BASE64_CSR_DATA",       // Optional: Certificate signing request in BASE64 format
+    "lifetime": 365,                // Optional: Lifetime of the certificate in days
+    "type": "client",               // Optional: Type of certificate (client or server)
+    "state": "active",              // Optional: State of the certificate (active, revoked, etc.)
+    "serialnumber": "1234567890"    // Optional: Serial number of the certificate
+  },
+  "auth": {
+    "username": "your_username",    // Username for authentication
+    "password": "your_password"     // Password for authentication
+  }
+}
+```
+
+### API Response Structure
+
+```json
+{
+  "success": true,                 // Indicates the success of the request
+  "errors": [
+    {
+      "code": 400,                 // HTTP status code
+      "message": "Error message"   // Error description
+    }
+  ],
+  "data": {
+    "certificate_pem": "PEM_DATA"  // Certificate data in PEM format (for CertificateResponseData)
+  }
+}
+```
 
 ## Dependencies
 
