@@ -7,6 +7,7 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 
 - **Certificate Request Handling:** Process incoming certificate signing requests (CSRs) from clients and generate signed certificates using the [x509 package](https://pkg.go.dev/crypto/x509) in Go.
 - **Certificate Storage:** Save signed certificates securely to a MongoDB for persistent storage, ensuring certificates remain available even across container restarts.
+- **Certificate Revocation List (CRL):** Manage and maintain a CRL to keep track of revoked certificates, enhancing security by preventing the use of compromised certificates.
 - **User Authentication:** Authenticate users' requests to ensure secure and authorized access to certificate-related operations.
 - **Flexibility:** Modify, extend, and tailor the infrastructure to your organization's unique security requirements.
 
