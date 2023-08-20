@@ -36,7 +36,7 @@ func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 
 	cfg, err := config.GetConfig()
 	if err != nil {
-		api.EncodeErrorResponse(w, http.StatusBadRequest, "Couldn't read config from context")
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Couldn't read config")
 		return
 	}
 

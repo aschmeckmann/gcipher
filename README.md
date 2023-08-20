@@ -1,6 +1,5 @@
 # gcipher: Go Certification & Integrity Platform for Hosted Encryption Resources
-
-# Unfinished
+## Unfinished Project
 
 gcipher is an open-source Go-based public key infrastructure (PKI) that empowers you to easily manage and secure public-key certificates while maintaining scalability. It provides a comprehensive solution for handling certificate signing requests (CSRs), certificate signing, storage, retrieval, and more.
 
