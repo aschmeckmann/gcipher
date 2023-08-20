@@ -28,14 +28,21 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
     cd gcipher
     ```
 
-2. Build and run the Docker container:
+2. Build the Docker container:
 
     ```bash
     docker build -t gcipher .
-    docker run -p 8080:8080 --volume certificates:/certificates gcipher
     ```
 
-3. Access the API at `http://localhost:8080`.
+3. Run the server command:
+
+    ```bash
+    docker run -p 8080:8080 --volume certificates:/certificates gcipher server
+    ```
+
+4. Access the API at `http://localhost:8080`.
+
+With the updated command system, you can now use different commands to manage the application. The "server" command starts the server, allowing you to access the API. You can explore additional commands as they are implemented in your application.
 
 ## Usage
 
