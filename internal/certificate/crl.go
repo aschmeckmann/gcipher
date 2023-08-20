@@ -84,7 +84,7 @@ func updateCRL() {
 		return
 	}
 
-	crl := models.NewCRL("itzememario", crlBytes)
+	crl := models.NewCRL(cfg.CACert.Issuer.SerialNumber, crlBytes)
 	err = repositories.GetCRLRepository().InsertOrUpdate(*crl)
 	if err != nil {
 		fmt.Println("Failed to insert/update CRL:", err)
