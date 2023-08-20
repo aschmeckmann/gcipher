@@ -80,6 +80,38 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 }
 ```
 
+### Configuration
+
+The `gcipher` application can be configured using a YAML configuration file. By default, the application looks for `config.yml` or `config.yaml` in the same directory. You can also provide configuration options through environment variables.
+
+#### Configuration File
+
+An example of a `config.yml` configuration file:
+
+```yaml
+port: 8080
+database_url: "mongodb://localhost:27017"
+certificate_lifetime_default: 365
+ca_cert_path: "/path/to/ca_cert.pem"
+ca_key_path: "/path/to/ca_key.pem"
+```
+
+#### Environment Variables
+
+You can override configuration options by setting environment variables. The following environment variables are available:
+
+- `GCIPHER_PORT`: Port on which the application should run.
+- `GCIPHER_DATABASE_URL`: Database URL for connecting to MongoDB.
+- `GCIPHER_CERTIFICATE_LIFETIME_DEFAULT`: Default lifetime of certificates in days.
+- `GCIPHER_CA_CERT_PATH`: Path to the CA certificate file.
+- `GCIPHER_CA_KEY_PATH`: Path to the CA private key file.
+
+Please note that environment variables take precedence over configuration file options.
+
+To ensure proper configuration, it's recommended to provide the necessary certificate and key paths, especially when dealing with certificate management operations. Make sure to adjust these values according to your environment.
+
+For more details on the configuration options, please refer to the source code in the `config` package.
+
 ## Dependencies
 
 - Go (1.17)
