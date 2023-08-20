@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"gcipher/internal/db/models"
 	"gcipher/internal/db/repositories"
+	"gcipher/internal/util"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterUser() {
@@ -38,7 +38,7 @@ func RegisterUser() {
 	}
 
 	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := util.GenerateFromPassword(password)
 	if err != nil {
 		fmt.Println("Error hashing password:", err)
 		return
@@ -48,7 +48,6 @@ func RegisterUser() {
 	newUser := models.User{
 		Username: username,
 		Password: string(hashedPassword),
-		// Add other fields if needed
 	}
 
 	err = userRepo.Insert(newUser)
