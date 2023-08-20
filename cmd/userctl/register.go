@@ -47,7 +47,7 @@ func RegisterUser() {
 	// Create and insert the user record
 	newUser := models.User{
 		Username: username,
-		Password: string(hashedPassword),
+		Password: hashedPassword,
 	}
 
 	err = userRepo.Insert(newUser)
