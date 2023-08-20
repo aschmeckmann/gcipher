@@ -32,6 +32,7 @@ func StartServer() {
 
 	mux.HandleFunc("/api/v1/certificate/request", certificate.HandleCertificateRequest)
 	mux.HandleFunc("/api/v1/certificate/retrieve", certificate.HandleCertificateRetrieval)
+	mux.HandleFunc("/public/ca/intermediate/crl", certificate.HandleCRL)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),

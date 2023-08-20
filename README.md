@@ -16,6 +16,7 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 - Implement certificate revocation
 - Store serial numbers directly as big int instead of doing type conversion back and forth
 - Endpoint to serve CA PK
+- Implement authentication
 - more..
 
 ## Getting Started

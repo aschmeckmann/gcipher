@@ -12,6 +12,7 @@ import (
 	"gcipher/internal/config"
 	"gcipher/internal/db/models"
 	"gcipher/internal/db/repositories"
+	"gcipher/internal/server/api"
 	"math/big"
 	"net/http"
 	"time"
@@ -33,9 +34,12 @@ func StartCRLUpdater() {
 func HandleCRL(w http.ResponseWriter, r *http.Request) {
 	crl, err := repositories.GetCRLRepository().FindLatest()
 	if err != nil {
-		http.Error(w, "Failed to retrieve CRL", http.StatusInternalServerError)
+		api.EncodeErrorResponse(w, http.StatusInternalServerError, "Failed to retrieve CRL")
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/pkix-crl")
+	w.Header().Set("Content-Disposition", "attachment; filename=crl.crl")
 
 	// Encode CRL bytes to PEM format
 	pemBlock := &pem.Block{
