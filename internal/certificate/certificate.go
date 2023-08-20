@@ -67,14 +67,14 @@ func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serialNumber, err := generateRandomSerialNumber()
-	if err != nil {
-		api.EncodeErrorResponse(w, http.StatusBadRequest, "Failed to generate serial number")
-		return
-	}
-
 	if request.Data.Lifetime < 1 {
 		request.Data.Lifetime = cfg.CertificateLifetimeDefault
+	}
+
+	serialNumber, succeed := new(big.Int).SetString(csr.Subject.SerialNumber, 16)
+	if !succeed {
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "CSR doesn't contain valid serial number")
+		return
 	}
 
 	// Create certificate template
@@ -143,13 +143,4 @@ func HandleCertificateRetrieval(w http.ResponseWriter, r *http.Request) {
 	}
 
 	api.EncodeResponse(w, api.CertificateResponseData{CertificatePEM: string(cert.CertificatePEM)})
-}
-
-func generateRandomSerialNumber() (*big.Int, error) {
-	maxSerialNumber := new(big.Int).Lsh(big.NewInt(1), 128) // 2^128
-	serialNumber, err := rand.Int(rand.Reader, maxSerialNumber)
-	if err != nil {
-		return nil, err
-	}
-	return serialNumber, nil
 }
