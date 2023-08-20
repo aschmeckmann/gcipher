@@ -39,6 +39,16 @@ func (repo *CertificateRepository) FindBySerialNumber(serialNumber string) (*mod
 	return &result, nil
 }
 
+func (repo *CertificateRepository) FindBySerialNumberAndUsername(serialNumber, username string) (*models.Certificate, error) {
+	filter := bson.M{"serial_number": serialNumber, "username": username}
+	var result models.Certificate
+	err := repo.certCollection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (repo *CertificateRepository) Update(cert models.Certificate) error {
 	filter := bson.M{"serial_number": cert.SerialNumber}
 	update := bson.M{"$set": cert}

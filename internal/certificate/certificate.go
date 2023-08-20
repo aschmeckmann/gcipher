@@ -21,7 +21,6 @@ import (
 // HandleCertificateRequest handles incoming certificate signing requests (CSRs) and generates signed certificates.
 func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 	var request api.Request
-
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		api.EncodeErrorResponse(w, http.StatusBadRequest, "Invalid request body")
@@ -121,26 +120,74 @@ func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 // HandleCertificateRetrieval retrieves a certificate by serial number.
 func HandleCertificateRetrieval(w http.ResponseWriter, r *http.Request) {
 	var request api.Request
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
 
-	_, err := user.Authenticate(request.Auth.Username, request.Auth.Password)
+	authUser, err := user.Authenticate(request.Auth.Username, request.Auth.Password)
 	if err != nil {
 		api.EncodeErrorResponse(w, http.StatusUnauthorized, "Unauthenticated")
 		return
 	}
 
-	queryValues := r.URL.Query()
-	certSerialNumber := queryValues.Get("serialNumber")
-
-	if certSerialNumber == "" {
+	if request.Data.SerialNumber == "" {
 		api.EncodeErrorResponse(w, http.StatusBadRequest, "Missing serialnumber parameter")
 		return
 	}
 
-	cert, err := repositories.GetCertificateRepository().FindBySerialNumber(certSerialNumber)
+	cert, err := repositories.GetCertificateRepository().FindBySerialNumberAndUsername(request.Data.SerialNumber, authUser.Username)
 	if err != nil {
 		api.EncodeErrorResponse(w, http.StatusNotFound, "Certificate not found")
 		return
 	}
 
+	// Return certificate to the client
 	api.EncodeResponse(w, api.CertificateResponseData{CertificatePEM: string(cert.CertificatePEM)})
+}
+
+// HandleRevokeCertificate revokes a certificate by its serial number.
+func HandleRevokeCertificate(w http.ResponseWriter, r *http.Request) {
+	var request api.Request
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	authUser, err := user.Authenticate(request.Auth.Username, request.Auth.Password)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusUnauthorized, "Unauthenticated")
+		return
+	}
+
+	if request.Data.SerialNumber == "" {
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Missing serialnumber parameter")
+		return
+	}
+
+	cert, err := repositories.GetCertificateRepository().FindBySerialNumberAndUsername(request.Data.SerialNumber, authUser.Username)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusNotFound, "Certificate not found")
+		return
+	}
+
+	// Check if the certificate is already revoked
+	if cert.RevokedAt != nil {
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Certificate already revoked")
+		return
+	}
+
+	// Update certificate with revocation time
+	now := time.Now()
+	cert.RevokedAt = &now
+	err = repositories.GetCertificateRepository().Update(*cert)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	// Return success response
+	api.EncodeResponse(w, api.Response{Success: true})
 }
