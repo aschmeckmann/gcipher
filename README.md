@@ -11,14 +11,25 @@ gcipher is an open-source Go-based public key infrastructure (PKI) that empowers
 - **User Authentication:** Authenticate users' requests to ensure secure and authorized access to certificate-related operations.
 - **Flexibility:** Modify, extend, and tailor the infrastructure to your organization's unique security requirements.
 
-## TODO
+## Roadmap and Future Enhancements
 
-- Store serial numbers directly as big int instead of doing type conversion back and forth
-- Endpoint to serve CA PK
-- Logging system
-- Access Control List implementation?
-- Check HTTP method? Real routing instead of http/mux?
-- more..
+As we continue to enhance and develop the **gcipher** project, here are some of the key improvements and features we're considering for the future:
+
+- **Optimized Serial Number Storage:** Explore optimizing the storage of serial numbers by directly using big integers, reducing unnecessary type conversions.
+
+- **CA Endpoint:** Implement an endpoint to serve the CA certificate, making it easily accessible for verification purposes.
+
+- **Logging Infrastructure:** Develop a robust and configurable logging system that allows users to choose between logging to standard output, log files, or even MongoDB.
+
+- **Access Control List (ACL):** Consider implementing an Access Control List mechanism to further enhance security and manage user access to various resources and operations.
+
+- **HTTP Method Checking:** Evaluate the implementation of HTTP method checking to ensure that API endpoints are accessed using the appropriate HTTP methods, enhancing endpoint security.
+
+- **Advanced Routing:** Explore utilizing more advanced routing mechanisms to enhance the efficiency and organization of the routing system, potentially replacing the current http/mux with a more robust routing solution.
+
+- **Continuous Improvement:** Continuously review and improve the project, addressing bugs, enhancing documentation, and incorporating user feedback to ensure a seamless and secure experience.
+
+These are just a few of the exciting enhancements we have on our roadmap. We're committed to making **gcipher** a powerful and flexible solution for managing certificates and encryption resources. Your feedback and contributions are invaluable as we work towards these goals.
 
 ## Getting Started
 
