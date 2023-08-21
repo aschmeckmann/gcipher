@@ -92,3 +92,34 @@ func (repo *CertificateRepository) RevokeCertificate(serialNumber string) error 
 	_, err := repo.certCollection.UpdateOne(context.Background(), filter, update)
 	return err
 }
+
+func (repo *CertificateRepository) FindByState(stateFilter string) ([]models.Certificate, error) {
+	filter := bson.M{}
+
+	if stateFilter == "revoked" {
+		filter["revoked_at"] = bson.M{"$exists": true}
+	} else if stateFilter == "valid" {
+		filter["revoked_at"] = nil
+	}
+
+	cursor, err := repo.certCollection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var certificates []models.Certificate
+	for cursor.Next(context.Background()) {
+		var cert models.Certificate
+		if err := cursor.Decode(&cert); err != nil {
+			return nil, err
+		}
+		certificates = append(certificates, cert)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return certificates, nil
+}

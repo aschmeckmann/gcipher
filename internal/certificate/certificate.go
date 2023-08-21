@@ -191,3 +191,54 @@ func HandleRevokeCertificate(w http.ResponseWriter, r *http.Request) {
 	// Return success response
 	api.EncodeResponse(w, api.Response{Success: true})
 }
+
+// HandleCertificateList retrieves a list of certificates based on the specified state filter.
+func HandleCertificateList(w http.ResponseWriter, r *http.Request) {
+	var request api.Request
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	_, err = user.Authenticate(request.Auth.Username, request.Auth.Password)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusUnauthorized, "Unauthenticated")
+		return
+	}
+
+	/* TODO: add admin check?
+	if !authUser.IsAdmin() {
+		api.EncodeErrorResponse(w, http.StatusForbidden, "Access denied")
+		return
+	}
+	*/
+
+	stateFilter := ""
+	switch request.Data.State {
+	case "all":
+		stateFilter = ""
+	case "revoked":
+		stateFilter = "R"
+	case "valid":
+		stateFilter = "V"
+	case "expired":
+		stateFilter = "E"
+	default:
+		api.EncodeErrorResponse(w, http.StatusBadRequest, "Invalid state filter")
+		return
+	}
+
+	certificates, err := repositories.GetCertificateRepository().FindByState(stateFilter)
+	if err != nil {
+		api.EncodeErrorResponse(w, http.StatusInternalServerError, "Failed to retrieve certificates")
+		return
+	}
+
+	certList := make([]api.CertificateResponseData, 0, len(certificates))
+	for _, cert := range certificates {
+		certList = append(certList, api.CertificateResponseData{CertificatePEM: string(cert.CertificatePEM)})
+	}
+
+	api.EncodeResponse(w, certList)
+}

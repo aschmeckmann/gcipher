@@ -1,4 +1,3 @@
-// commands/main.go
 package main
 
 import (

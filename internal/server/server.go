@@ -33,6 +33,7 @@ func StartServer() {
 	mux.HandleFunc("/api/v1/certificate/request", certificate.HandleCertificateRequest)
 	mux.HandleFunc("/api/v1/certificate/retrieve", certificate.HandleCertificateRetrieval)
 	mux.HandleFunc("/api/v1/certificate/revoke", certificate.HandleRevokeCertificate)
+	mux.HandleFunc("/api/v1/certificate/list", certificate.HandleCertificateList)
 	mux.HandleFunc("/public/ca/intermediate/crl", certificate.HandleCRL)
 
 	srv := &http.Server{
