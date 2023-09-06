@@ -6,6 +6,7 @@ import (
 	"gcipher/internal/certificate"
 	"gcipher/internal/config"
 	"gcipher/internal/db/repositories"
+	ocsp "gcipher/internal/oscp"
 	"log"
 	"net/http"
 	"os"
@@ -34,7 +35,7 @@ func StartServer() {
 	mux.HandleFunc("/api/v1/certificate/retrieve", certificate.HandleCertificateRetrieval)
 	mux.HandleFunc("/api/v1/certificate/revoke", certificate.HandleRevokeCertificate)
 	mux.HandleFunc("/api/v1/certificate/list", certificate.HandleCertificateList)
-	mux.HandleFunc("/public/ca/intermediate/crl", certificate.HandleCRL)
+	mux.HandleFunc("/public/ca/intermediate/crl", ocsp.HandleCRL)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),

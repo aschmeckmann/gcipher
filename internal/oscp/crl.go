@@ -1,4 +1,4 @@
-package certificate
+package ocsp
 
 import (
 	"crypto"
@@ -96,9 +96,9 @@ func updateCRL() {
 	}
 }
 
-func generateCRL(caCert *x509.Certificate, caKey crypto.Signer, revokedCerts []models.Certificate) ([]byte, error) {
+func generateCRL(cert *x509.Certificate, key crypto.Signer, revokedCerts []models.Certificate) ([]byte, error) {
 	template := x509.RevocationList{
-		SignatureAlgorithm:  caCert.SignatureAlgorithm,
+		SignatureAlgorithm:  cert.SignatureAlgorithm,
 		RevokedCertificates: []pkix.RevokedCertificate{},
 		ThisUpdate:          time.Now(),
 		NextUpdate:          time.Now().Add(CRLUpdateInterval),
@@ -112,7 +112,7 @@ func generateCRL(caCert *x509.Certificate, caKey crypto.Signer, revokedCerts []m
 		})
 	}
 
-	crlBytes, err := x509.CreateRevocationList(rand.Reader, &template, caCert, caKey)
+	crlBytes, err := x509.CreateRevocationList(rand.Reader, &template, cert, key)
 	if err != nil {
 		return nil, err
 	}

@@ -26,7 +26,7 @@ type RequestData struct {
 }
 
 type CertificateResponseData struct {
-	CertificatePEM string `json:"certificate_pem"`
+	CertificatePEM string `json:"cert"`
 }
 
 type Auth struct {

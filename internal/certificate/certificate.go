@@ -1,8 +1,6 @@
 package certificate
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/base64"
@@ -78,8 +76,18 @@ func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Create certificate template
 	template := x509.Certificate{
+		Issuer:                cfg.CACert.Subject,
+		SignatureAlgorithm:    csr.SignatureAlgorithm,
+		PublicKeyAlgorithm:    csr.PublicKeyAlgorithm,
+		Version:               csr.Version,
 		SerialNumber:          serialNumber,
 		Subject:               csr.Subject,
+		IPAddresses:           csr.IPAddresses,
+		EmailAddresses:        csr.EmailAddresses,
+		DNSNames:              csr.DNSNames,
+		URIs:                  csr.URIs,
+		Extensions:            csr.Extensions,
+		ExtraExtensions:       csr.ExtraExtensions,
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(0, 0, request.Data.Lifetime),
 		KeyUsage:              keyUsage,
@@ -87,15 +95,8 @@ func HandleCertificateRequest(w http.ResponseWriter, r *http.Request) {
 		BasicConstraintsValid: true,
 	}
 
-	// Generate private key
-	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		api.EncodeErrorResponse(w, http.StatusInternalServerError, "Failed to generate private key")
-		return
-	}
-
 	// Generate certificate
-	certBytes, err := x509.CreateCertificate(rand.Reader, &template, cfg.CACert, &priv.PublicKey, cfg.CAKey)
+	certBytes, err := x509.CreateCertificate(rand.Reader, &template, cfg.CACert, csr.PublicKey, cfg.CAKey)
 	if err != nil {
 		api.EncodeErrorResponse(w, http.StatusInternalServerError, "Failed to create certificate")
 		return
@@ -214,22 +215,7 @@ func HandleCertificateList(w http.ResponseWriter, r *http.Request) {
 	}
 	*/
 
-	stateFilter := ""
-	switch request.Data.State {
-	case "all":
-		stateFilter = ""
-	case "revoked":
-		stateFilter = "R"
-	case "valid":
-		stateFilter = "V"
-	case "expired":
-		stateFilter = "E"
-	default:
-		api.EncodeErrorResponse(w, http.StatusBadRequest, "Invalid state filter")
-		return
-	}
-
-	certificates, err := repositories.GetCertificateRepository().FindByState(stateFilter)
+	certificates, err := repositories.GetCertificateRepository().FindByState(request.Data.State)
 	if err != nil {
 		api.EncodeErrorResponse(w, http.StatusInternalServerError, "Failed to retrieve certificates")
 		return

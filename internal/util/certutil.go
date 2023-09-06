@@ -4,23 +4,33 @@ import (
 	"bytes"
 	"crypto/x509"
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/youmark/pkcs8"
 )
 
-// ParseCACertificate parses the CA certificate from a file and returns the x509.Certificate object
-func ParseCACertificate(certPath string) (*x509.Certificate, error) {
+// ParseCertificate parses the CA certificate from a file and returns the x509.Certificate object
+func ParseCertificate(certPath string) (*x509.Certificate, error) {
 	certBytes, err := os.ReadFile(certPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read CA certificate file: %v", err)
 	}
 
-	return ParseCACertificateFromBytes(certBytes)
+	return ParseCertificateFromBytes(certBytes)
+}
+
+// ParseKey parses the CA private key from a file and returns the private key object
+func ParseKey(keyPath string, passphrase []byte) (interface{}, error) {
+	keyBytes, err := os.ReadFile(keyPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read CA key file: %v", err)
+	}
+
+	return ParseKeyFromBytes(keyBytes, passphrase)
 }
 
 // LoadKeyFromS3 loads a key from an S3 bucket and returns the key bytes
@@ -54,8 +64,8 @@ func LoadKeyFromS3(bucket, key, region string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// ParseCACertificateFromBytes parses the CA certificate from a byte slice and returns the x509.Certificate object
-func ParseCACertificateFromBytes(certBytes []byte) (*x509.Certificate, error) {
+// ParseCertificateFromBytes parses the CA certificate from a byte slice and returns the x509.Certificate object
+func ParseCertificateFromBytes(certBytes []byte) (*x509.Certificate, error) {
 	block, _ := pem.Decode(certBytes)
 	if block == nil {
 		return nil, fmt.Errorf("failed to decode PEM block containing CA certificate")
@@ -69,42 +79,23 @@ func ParseCACertificateFromBytes(certBytes []byte) (*x509.Certificate, error) {
 	return cert, nil
 }
 
-// ParseCAKey parses the CA private key from a file and returns the private key object
-func ParseCAKey(keyPath string) (interface{}, error) {
-	keyBytes, err := os.ReadFile(keyPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read CA key file: %v", err)
-	}
+// ParseKeyFromBytes parses the CA private key from bytes and returns the crypto.Signer interface
+func ParseKeyFromBytes(der []byte, passphrase []byte) (interface{}, error) {
+	block, _ := pem.Decode(der)
 
-	return ParseCAKeyFromBytes(keyBytes)
-}
-
-// ParseCAKeyFromBytes parses the CA private key from bytes and returns the crypto.Signer interface
-func ParseCAKeyFromBytes(keyBytes []byte) (interface{}, error) {
-	block, _ := pem.Decode(keyBytes)
 	if block == nil {
-		return nil, errors.New("failed to decode PEM block containing CA key")
+		return nil, fmt.Errorf("failed to decode PEM block")
 	}
 
-	var privateKey interface{}
 	switch block.Type {
 	case "RSA PRIVATE KEY":
-		rsaPrivateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse RSA private key: %v", err)
-		}
-		privateKey = rsaPrivateKey
-
+		return x509.ParsePKCS1PrivateKey(block.Bytes)
+	case "PRIVATE KEY":
+		key, _, err := pkcs8.ParsePrivateKey(der, passphrase)
+		return key, err
 	case "EC PRIVATE KEY":
-		ecPrivateKey, err := x509.ParseECPrivateKey(block.Bytes)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse EC private key: %v", err)
-		}
-		privateKey = ecPrivateKey
-
+		return x509.ParseECPrivateKey(block.Bytes)
 	default:
 		return nil, fmt.Errorf("unsupported private key type: %s", block.Type)
 	}
-
-	return privateKey, nil
 }
