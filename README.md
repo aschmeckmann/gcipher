@@ -144,12 +144,12 @@ The `gcipher` application provides a CLI that facilitates various operations rel
 
     - **register**: Register a new user
       ```
-      gcipher userctl register
+      gcipher userctl register [username] [password]
       ```
   
     Example usage: To register a new user, you can use the following command:
     ```bash
-    gcipher userctl register
+    gcipher userctl register user123 p4$$w0rd
     ```
 
 2. **migratectl**: Certificate Migration

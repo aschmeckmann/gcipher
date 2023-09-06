@@ -12,7 +12,7 @@ import (
 
 func RegisterUser() {
 	if len(os.Args) < 5 {
-		fmt.Println("Usage: gcipher userctl register <username> <password>")
+		fmt.Println("Usage: gcipher userctl register [username] [password]")
 		return
 	}
 
