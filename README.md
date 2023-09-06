@@ -131,6 +131,48 @@ To ensure proper configuration, it's recommended to provide the necessary certif
 
 For more details on the configuration options, please refer to the source code in the `config` package.
 
+## Command-Line Interface (CLI)
+
+The `gcipher` application provides a CLI that facilitates various operations related to user management and certificate migration. The CLI extends the application's functionality and makes it easier to perform tasks without having to interact with the API directly.
+
+### Available Commands
+
+1. **userctl**: User Management
+    ```
+    gcipher userctl [command]
+    ```
+
+    - **register**: Register a new user
+      ```
+      gcipher userctl register
+      ```
+  
+    Example usage: To register a new user, you can use the following command:
+    ```bash
+    gcipher userctl register
+    ```
+
+2. **migratectl**: Certificate Migration
+    ```
+    gcipher migratectl [command]
+    ```
+
+    - **migrate-certs**: Migrate certificates to the database
+      ```
+      gcipher migratectl migrate-certs [path-to-certs-directory] [username]
+      ```
+  
+    Example usage: To migrate certificates from a directory to the database under a specific username, you can use the following command:
+    ```bash
+    gcipher migratectl migrate-certs /path/to/certs user123
+    ```
+
+### Command Usage Guidelines
+
+- **userctl**: The `userctl` command is mainly used for managing users. Currently, it supports the `register` subcommand to facilitate new user registration. More subcommands may be added in the future for tasks such as deleting users or updating user information.
+
+- **migratectl**: The `migratectl` command allows you to migrate certificates stored in a directory to your MongoDB database. It expects the path to the directory containing PEM certificates and a username that will be the owner of these certificates.
+
 ## Dependencies
 
 - Go (1.17)
